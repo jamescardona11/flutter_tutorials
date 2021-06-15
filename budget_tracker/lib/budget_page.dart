@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'budget_repository.dart';
 import 'failure_model.dart';
 import 'item_model.dart';
+import 'spending_chart_widget.dart';
 
 class BudgetPage extends StatefulWidget {
   const BudgetPage({
@@ -43,7 +44,7 @@ class _BudgetPageState extends State<BudgetPage> {
               return ListView.builder(
                 itemCount: items.length + 1,
                 itemBuilder: (BuildContext context, int index) {
-                  // if (index == 0) return SpendingChart(items: items);
+                  if (index == 0) return SpendingChart(items: items);
 
                   final item = items[index - 1];
                   return Container(
