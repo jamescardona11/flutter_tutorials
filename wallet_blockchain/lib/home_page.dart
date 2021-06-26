@@ -3,6 +3,8 @@ import 'package:http/http.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:web3dart/web3dart.dart';
 
+import 'slider_indicator.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
@@ -17,12 +19,14 @@ class _HomePageState extends State<HomePage> {
   late Web3Client ethClient;
 
   final address = '0xEc0B19814E98c93eD6F0859fEdE4f92F40bD1431';
+  int amount = 0;
   bool data = false;
 
   @override
   void initState() {
     super.initState();
-    // httpClient = Client();
+    httpClient = Client();
+    ethClient = Web3Client('', httpClient);
   }
 
   @override
@@ -61,6 +65,15 @@ class _HomePageState extends State<HomePage> {
               .shadowXl
               .make()
               .p16(),
+          30.heightBox,
+          SliderWidget(
+            min: 0,
+            max: 100,
+            finalVal: (v) {
+              amount = (v * 100).round();
+            },
+          ).centered(),
+          30.heightBox,
           HStack(
             [
               TextButton.icon(
