@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:web3dart/web3dart.dart';
@@ -26,7 +27,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     httpClient = Client();
-    ethClient = Web3Client('', httpClient);
+    ethClient = Web3Client(
+      'https://rinkeby.infura.io/v3/69cd57b79bae4234918a335c974a1a5c',
+      httpClient,
+    );
   }
 
   @override
@@ -116,5 +120,29 @@ class _HomePageState extends State<HomePage> {
         ])
       ]),
     );
+  }
+
+  Future<void> getBalance(String targetAddress) async {
+    final address = EthereumAddress.fromHex(targetAddress);
+    List<dynamic> result = await query('getBalance', []);
+  }
+
+  Future<List<dynamic>> query(String functionName, List<dynamic> args) async {
+    final contract = await loadContract();
+
+    final ethFunction = contract.function(functionName);
+
+    final result = await ethClient(
+        contract: contract, function: ethFunction, params: args);
+
+    return result;
+  }
+
+  Future<DeployedContract> loadContract() async {
+    String abi = await rootBundle.loadString('assets/abi.json');
+    String contractAddress = '0x094a568bB454c273f86a939Eb5911D4D56FeDFB3';
+
+    return DeployedContract(ContractAbi.fromJson(abi, 'PKCoin'),
+        EthereumAddress.fromHex(contractAddress));
   }
 }
