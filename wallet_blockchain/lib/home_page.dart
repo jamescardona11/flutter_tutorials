@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'slider_indicator.dart';
 
@@ -19,16 +20,27 @@ class _HomePageState extends State<HomePage> {
   late Client httpClient;
   late Web3Client ethClient;
 
-  final address = '0xEc0B19814E98c93eD6F0859fEdE4f92F40bD1431';
+  late String address;
+  late String projecID;
+  late String private;
+  late String contract;
+
   int amount = 0;
   bool data = false;
+
+  late var myData;
 
   @override
   void initState() {
     super.initState();
+    address = dotenv.env['ADDRESS']!;
+    projecID = dotenv.env['INFURA_CLIENT']!;
+    private = dotenv.env['PRIVATE']!;
+    contract = dotenv.env['CONTRACT']!;
+
     httpClient = Client();
     ethClient = Web3Client(
-      'https://rinkeby.infura.io/v3/69cd57b79bae4234918a335c974a1a5c',
+      'https://rinkeby.infura.io/v3/$projecID',
       httpClient,
     );
   }
@@ -55,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 'Balance'.text.gray700.xl2.semiBold.makeCentered(),
                 10.heightBox,
                 data
-                    ? "\$1".text.bold.xl6.makeCentered()
+                    ? "\$$myData".text.bold.xl6.makeCentered()
                     : CircularProgressIndicator().centered()
               ],
             ),
@@ -81,7 +93,7 @@ class _HomePageState extends State<HomePage> {
           HStack(
             [
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () => getBalance(address),
                 icon: Icon(Icons.refresh, color: Colors.white),
                 label: "Refresh".text.white.make(),
                 style: ButtonStyle(
@@ -92,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () => sendCoin(),
                 icon: Icon(Icons.call_made_outlined, color: Colors.white),
                 label: "Deposit".text.white.make(),
                 style: ButtonStyle(
@@ -103,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () => withdrawCoin(),
                 icon: Icon(Icons.call_received_outlined, color: Colors.white),
                 label: "Withdraw".text.white.make(),
                 style: ButtonStyle(
@@ -123,8 +135,55 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getBalance(String targetAddress) async {
-    final address = EthereumAddress.fromHex(targetAddress);
+    // final address = EthereumAddress.fromHex(targetAddress);
     List<dynamic> result = await query('getBalance', []);
+
+    myData = result[0];
+    data = true;
+
+    setState(() {});
+  }
+
+  Future<String> sendCoin() async {
+    final bigAmount = BigInt.from(amount);
+    final response = await submit("depositBalance", [bigAmount]);
+
+    print("Deposited");
+
+    return response;
+  }
+
+  Future<String> withdrawCoin() async {
+    final bigAmount = BigInt.from(amount);
+    final response = await submit("withdrawBalance", [bigAmount]);
+
+    print("withdraw");
+
+    return response;
+  }
+
+  Future<String> submit(String functionName, List<dynamic> args) async {
+    EthPrivateKey credentials = EthPrivateKey.fromHex(private);
+    final contract = await loadContract();
+
+    final ethFunction = contract.function(functionName);
+
+    print('Cred: ${credentials.privateKey}');
+    print('ethFunction: ${ethFunction.name}');
+    print('contract: ${contract.address}');
+    print('args: $args');
+
+    final result = await ethClient.sendTransaction(
+      credentials,
+      Transaction.callContract(
+        contract: contract,
+        function: ethFunction,
+        parameters: args,
+      ),
+      fetchChainIdFromNetworkId: true,
+    );
+
+    return result;
   }
 
   Future<List<dynamic>> query(String functionName, List<dynamic> args) async {
@@ -140,9 +199,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<DeployedContract> loadContract() async {
     String abi = await rootBundle.loadString('assets/abi.json');
-    String contractAddress = '0x094a568bB454c273f86a939Eb5911D4D56FeDFB3';
 
-    return DeployedContract(ContractAbi.fromJson(abi, 'PKCoin'),
-        EthereumAddress.fromHex(contractAddress));
+    return DeployedContract(
+        ContractAbi.fromJson(abi, 'PKCoin'), EthereumAddress.fromHex(contract));
   }
 }
