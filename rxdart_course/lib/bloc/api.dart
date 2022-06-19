@@ -13,6 +13,34 @@ class Api {
 
   Api();
 
+  Future<List<Thing>> search(SearchTerm searchTerm) async {
+    final term = searchTerm.trim().toLowerCase();
+
+    final cachedResults = _extractThingUsingSearchTerm(term);
+    if (cachedResults != null) {
+      return cachedResults;
+    }
+
+    final persons =
+        await _getJson('http://127.0.0.1:5500/apis/persons.json').then(
+      (json) => json.map(
+        (e) => Person.fromJson(e),
+      ),
+    );
+    _persons = persons.toList();
+
+    final animals =
+        await _getJson('http://127.0.0.1:5500/apis/animals.json').then(
+      (json) => json.map(
+        (e) => Animal.fromJson(e),
+      ),
+    );
+
+    _animals = animals.toList();
+
+    return _extractThingUsingSearchTerm(term) ?? [];
+  }
+
   List<Thing>? _extractThingUsingSearchTerm(SearchTerm term) {
     final cachedAnimals = _animals;
     final cachedPersons = _persons;
