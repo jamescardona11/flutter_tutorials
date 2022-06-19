@@ -37,44 +37,62 @@ class HomePage extends HookWidget {
     );
 
     return Scaffold(
-      body: Center(
-        child: Text('Hello New Page'),
+      appBar: AppBar(
+        title: StreamBuilder<String>(
+          stream: subject.stream
+              .distinct()
+              .debounceTime(const Duration(milliseconds: 800)),
+          initialData: 'Please start typing...',
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            return Text(snapshot.data);
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextField(
+          onChanged: (value) {
+            subject.sink.add(value);
+          },
+        ),
       ),
     );
   }
 }
 
-class HomePage2 extends StatefulWidget {
-  /// default constructor
-  const HomePage2({
-    Key? key,
-  }) : super(key: key);
+// class HomePage2 extends StatefulWidget {
+//   /// default constructor
+//   const HomePage2({
+//     Key? key,
+//   }) : super(key: key);
 
-  @override
-  State<HomePage2> createState() => _HomePage2State();
-}
+//   @override
+//   State<HomePage2> createState() => _HomePage2State();
+// }
 
-class _HomePage2State extends State<HomePage2> {
-  late final BehaviorSubject<String> subject;
+// class _HomePage2State extends State<HomePage2> {
+//   late final BehaviorSubject<String> subject;
 
-  @override
-  void initState() {
-    super.initState();
-    subject = BehaviorSubject<String>();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     subject = BehaviorSubject<String>();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('Hello New Page'),
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: Text('Hello New Page'),
+//       ),
+//     );
+//   }
 
-  @override
-  void dispose() async {
-    await subject.close();
-    super.dispose();
-  }
-}
+//   @override
+//   void dispose() async {
+//     await subject.close();
+//     super.dispose();
+//   }
+// }
+
+
