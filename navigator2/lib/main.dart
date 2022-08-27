@@ -9,20 +9,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final router = Rubber(routes: [
-      RubberRoute(
+    final router = ElevenNav(routes: [
+      ElevenNavRoute(
         path: '/',
         handler: (context, state) => HomePage(),
       ),
-      RubberRoute(
+      ElevenNavRoute(
         path: '/detail',
-        handler: (context, state) => DetailPage(),
+        handler: (context, state) => DetailPage(from: 'No se'),
       ),
     ]);
 
     return MaterialApp.router(
       title: 'Material App',
-      routeInformationParser: router.routeInformationParser,
+      routeInformationParser: router.parser,
       routerDelegate: router.delegate,
       // home: HomePage(),
     );
@@ -39,10 +39,18 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AppBar Text'),
+        title: Text('HomePage'),
       ),
-      body: Container(
-        child: Text('HomePage'),
+      body: Center(
+        child: Container(
+          child: GestureDetector(
+            onTap: () {
+              print('Here');
+              ElevenNav.of(context).nav('/detail');
+            },
+            child: Text('Go To detail'),
+          ),
+        ),
       ),
     );
   }
@@ -52,16 +60,21 @@ class DetailPage extends StatelessWidget {
   /// default constructor
   const DetailPage({
     super.key,
+    required this.from,
   });
+
+  final String from;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AppBar Text'),
+        title: Text('DetailPage'),
       ),
-      body: Container(
-        child: Text('HomePage'),
+      body: Center(
+        child: Container(
+          child: Text('FROM $from'),
+        ),
       ),
     );
   }
