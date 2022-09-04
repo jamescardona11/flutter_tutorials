@@ -122,6 +122,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
 
   @override
   Future<void> setNewRoutePath(BookRoutePath path) async {
+    print('HJEEER');
     if (path.isUnknown) {
       _selectedBook = null;
       show404 = true;

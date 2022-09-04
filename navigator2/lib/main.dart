@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'nav_route.dart';
 import 'rubber_route.dart';
 
 void main() => runApp(MyApp());
@@ -46,7 +47,7 @@ class HomePage extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
               print('Here');
-              ElevenNav.of(context).nav('/detail');
+              // ElevenNav.of(context).nav('/detail');
             },
             child: Text('Go To detail'),
           ),
