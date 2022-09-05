@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rxdart_course/bloc/api.dart';
-import 'package:rxdart_course/bloc/search_bloc.dart';
-import 'package:rxdart_course/views/search_result_view.dart';
+import 'package:rxdart_course_youtube/step1/step1.dart';
 
 class HomePage extends StatefulWidget {
   /// default constructor

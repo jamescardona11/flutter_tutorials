@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rxdart_course/bloc/search_result.dart';
-import 'package:rxdart_course/models/animal.dart';
-import 'package:rxdart_course/models/person.dart';
+import 'package:rxdart_course_youtube/step1/step1.dart';
 
 class SearchResultView extends StatelessWidget {
   /// default constructor

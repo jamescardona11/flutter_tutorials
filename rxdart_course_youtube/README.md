@@ -1,4 +1,4 @@
-# rxdart_course
+# rxdart_course_youtube
 
 A new Flutter project.
 

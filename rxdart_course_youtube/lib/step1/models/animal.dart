@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' show immutable;
-
-import 'package:rxdart_course/models/thing.dart';
+import 'package:rxdart_course_youtube/step1/step1.dart';
 
 enum AnimalType { dog, cat, rabbit, unknown }
 
