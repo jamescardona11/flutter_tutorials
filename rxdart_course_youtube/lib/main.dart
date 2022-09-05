@@ -2,6 +2,7 @@ import 'dart:developer' as devtools show log;
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/subjects.dart';
 
 extension Log on Object {
   void log() => devtools.log(toString());
@@ -21,47 +22,58 @@ class MyApp extends StatelessWidget {
   }
 }
 
-void testItCombined() async {
-  final stream1 = Stream.periodic(
-      const Duration(seconds: 1), (count) => 'Stream 1, count = $count');
-
-  final stream2 = Stream.periodic(
-      const Duration(seconds: 3), (count) => 'Stream 2, count = $count');
-
-  final combined =
-      Rx.combineLatest2(stream1, stream2, (a, b) => 'One = $a, Two = $b');
-
-  await for (final value in combined) {
-    value.log();
-  }
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
 }
 
-void testConcat() async {
-  final stream1 =
-      Stream.periodic(const Duration(seconds: 1), (count) => '$count').take(10);
+class _HomePageState extends State<HomePage> {
+  late final BehaviorSubject<DateTime> subject;
+  late final Stream<String> streamOfStrings;
 
-  final stream2 = Stream.periodic(
-          const Duration(seconds: 3), (count) => 'Stream 2, count = $count')
-      .take(3);
+  @override
+  void initState() {
+    super.initState();
 
-  final concat = stream1.concatWith([stream2]);
-
-  await for (final value in concat) {
-    value.log();
+    subject = BehaviorSubject<DateTime>();
+    streamOfStrings = subject.switchMap(
+      (dateTime) => Stream.periodic(const Duration(seconds: 1),
+          (count) => 'Stream count= $count, dateTime = $dateTime'),
+    );
   }
-}
 
-class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    testConcat();
     return Scaffold(
       appBar: AppBar(
         title: Text('AppBar Text'),
       ),
-      body: Center(
-        child: Text('New Page'),
+      body: Column(
+        children: [
+          StreamBuilder<String>(
+            stream: streamOfStrings,
+            builder: (_, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.requireData);
+              } else {
+                return Text('Waiting for the boton');
+              }
+            },
+          ),
+          TextButton(
+            onPressed: () {
+              subject.add(DateTime.now());
+            },
+            child: Text('Start this string'),
+          ),
+        ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    subject.close();
+    super.dispose();
   }
 }
