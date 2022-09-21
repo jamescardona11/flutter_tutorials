@@ -1,4 +1,4 @@
-# rxdart_course
+# bloc_pattern
 
 A new Flutter project.
 
