@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'flutter_bloc_2/products_bloc.dart';
+import 'products_bloc.dart';
 
 void main() {
   runApp(const MyApp());
