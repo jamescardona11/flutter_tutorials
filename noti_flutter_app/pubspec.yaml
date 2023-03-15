@@ -33,6 +33,15 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^2.4.1
   firebase_messaging: ^14.2.1
+  overlay_support: ^2.1.0
+  flutter_app_badger: ^1.5.0
+  flutter_local_notifications: ^13.0.0
+  shared_preferences: ^2.0.18
+  http: ^0.13.5
+  pocket:
+    git:
+      url: https://github.com/jamescardona11/starter_kit_flutter.git
+      path: pocket/
 
 dev_dependencies:
 
