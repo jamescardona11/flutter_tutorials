@@ -1,4 +1,4 @@
-# navigator2
+# animation_flutter
 
 A new Flutter project.
 
